@@ -1,0 +1,34 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public class linux {
+
+	public static void main(String args[]) throws IOException {
+
+		String s = null;
+
+		Process p = Runtime.getRuntime().exec(
+				"hdfs dfs -count  /user/hive/warehouse/*");
+
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(
+				p.getInputStream()));
+
+		TreeMap<Integer, String> tMap = new TreeMap<Integer, String>();
+		while ((s = stdInput.readLine()) != null) {
+			System.out.println(s);
+			String[] s1 = s.split("\\s+");
+			tMap.put(Integer.parseInt(s1[2]), s1[3]);
+
+		}
+
+		ArrayList<Integer> keys = new ArrayList<Integer>(tMap.keySet());
+		for (int i = keys.size() - 1; i >= keys.size() - 4; i--) {
+			System.out.println(tMap.get(keys.get(i)));
+		}
+
+	}
+}

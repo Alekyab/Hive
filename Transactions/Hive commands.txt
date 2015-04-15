@@ -1,0 +1,22 @@
+create table logs(day int, userid STRING, timestamp_time STRING, action_user STRING) row format delimited fields terminated by ',';
+
+load data inpath '/alekya/day/*' into table logs;
+
+create table logs1(userid STRING, timestamp_time STRING, action_user STRING) partitioned on (day int) row format delimited fields terminated by ',';
+
+insert into table logs1 partition(day) select userid,timestamp_time,action_user,day  from logs;
+
+// query for pulling day and number of conversions on that day
+
+select day, count(action_user) from logs1 where action_user='purchase' group by day;
+
+//track the first session of the user
+
+select userid, min(day), min(timestamp_time) from logs group by userid;
+
+//track the final time he hits the purchase
+
+select userid, day, timestamp_time from  logs1 where action_user='purchase';
+
+//userid, conversionlength(numberof days from first session to purchase)
+select t1.userid, t2.day-min(t1.day),min(t1.timestamp_time) from logs1 t1 join logs1 t2 where t1.userid=t2.userid and t2.action_user='purchase' group by t1.userid,t2.day;

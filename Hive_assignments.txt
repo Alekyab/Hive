@@ -1,0 +1,28 @@
+
+1) Highest rated genre for user with profession as "doctor/health care" with count
+
+ select count(m.rating), g.id, g.name  from occupation o join user u on u.occupationid =o.id join movierating m on m.userid =u.id  join moviegenre mg on mg.movieid = m.movieid join genre g on g.id=mg.genreid where o.name ="doctor/health care" group by g.id, g.name;
+
+2) Effect of occupation and gender on 5* ratings
+
+select o.name, u.gender, count(m.rating) from user u join movierating m on u.id = m.userid join occupation o on o.id =u.occupationid  where m.rating=5 group by u.gender,o.name;
+
+3)Select data with the range of ages and the occupations on rating of 5
+
+select u.age,o.name, count(m.rating) from user u join movierating m on u.id = m.userid join occupation o on o.id =u.occupationid  where m.rating=5 group by o.name, u.age;
+
+4) Find out the effect of age on 5* ratings
+
+select u.age, count(m.rating) from user u join movierating m on u.id = m.userid where m.rating=5 group by u.age;     
+
+5) Select data with the range of ages and the occupations on rating of 5
+
+ select o.name, count(m.rating)  from user u join occupation o on  u.occupationid = o.id join movierating m on m.userid = u.id where  m.rating=5 group by o.name;  
+
+6)Find out the effect of Gender on the 5* ratings
+
+select u.gender, count(m.rating)     from movierating m join user u on m.userid = u.id where rating=5 group by u.gender; 
+
+7)In the year 1950 which are the movies that are rated more than once
+
+select m.name,r.movieid,count(rating) from movie m join movierating r on m.id = r.movieid where m.year=1950  group by m.name,r.movieid having count(rating)>1;
