@@ -1,0 +1,41 @@
+//JSON to AVRO
+java -jar ~/avro-tools-1.7.7.jar fromjson --schema-file avroschema jsondata > avrodata
+
+//With compression
+java -jar ~/avro-tools-1.7.7.jar fromjson --codec snappy --schema-file avroschema jsondata > avrodata
+
+
+
+//AVRO to JSON
+java -jar ~/avro-tools-1.7.4.jar tojson avrofile1 > json
+
+
+//CSV to AVRO
+To convert csv file into avro file , first create hive table on top of csv file
+
+CREATE TABLE csv_table (
+student_id INT,
+subject_id INT,
+marks INT)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+load data local inpath 'studentdata' into table csv_table;
+
+
+//Create hive able with avro schema and write data into it. the data will be stored as avro file in warehouse
+
+CREATE TABLE avro_table
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+TBLPROPERTIES (
+'avro.schema.literal'='{
+"namespace": "com.rishav.avro",
+"name": "student_marks",
+"type": "record",
+"fields": [ { "name":"student_id","type":"int"}, { "name":"subject_id","type":"int"}, { "name":"marks","type":"int"}]
+}');
+
+
+INSERT OVERWRITE TABLE avro_table SELECT student_id, subject_id, marks FROM csv_table;
